@@ -4,58 +4,82 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include <GoPlus2.h>
+#include <MODULE_GRBL13.2.h>
+#include <WiFi.h>
+#include <DolibarrClient.h>
+#include <ArduinoJson.h>
 
-MFRC522 mfrc522(0x28); // Instance de la classe MFRC522
-GoPlus2 goPlus;
-String readerCard(MFRC522 *mfrc522);
+// MFRC522 mfrc522(40); // Instance de la classe MFRC522
+// GoPlus2 goPlus;
+// String readerCard(MFRC522 *mfrc522);
+
+// Paramètres du moteur
+const float angle_pas = 1.8;                      // Angle de pas du moteur en degrés
+const int steps_per_revolution = 360 / angle_pas; // Nombre de pas par révolution
+const int steps_for_360 = steps_per_revolution;   // Nombre de pas pour un tour complet
+const float duration = 0.5;                       // Durée du mouvement en secondes
+
+// GRBL stepper_motor_driver = GRBL(0x70);
 
 void setup()
 {
-  mfrc522.PCD_Init();
-  // goPlus.begin();
+  M5.begin();
+
+  // Wire.begin(21, 22);
+  // stepper_motor_driver.Init(&Wire);
+  // stepper_motor_driver.setMode("absolute");
+
   Serial.begin(115200);
+  WiFi.begin("VAL-PORTABLE 8610", "n2460F;0");
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+  Serial.println("Connected to WiFi");
+
+  Dolibarr dolibarr("http://86.202.221.234:8088");
+  String resp = dolibarr.connect("admin", "admin");
+
+  String doc = dolibarr.getProductWarehouse("1");
+
+  Serial.println("Warehouse : " + doc);
 }
+
 
 void loop()
 {
-  readerCard(&mfrc522);
+  // M5.update();
+  // if (M5.BtnA.isPressed())
+  // {
+  //   float speed = steps_for_360 / duration;
+
+  //   stepper_motor_driver.setMotor(1800 * 2, 1800 * 2, 1800 * 2, speed);
+  // }
 }
 
-String readerCard(MFRC522 *mfrc522)
+/*
+void loop()
 {
-  String rfid_read = "";
-  if (!mfrc522->PICC_IsNewCardPresent() || !mfrc522->PICC_ReadCardSerial())
-  {
-    delay(200);
+  M5.update();
 
-    return rfid_read;
+  if (M5.BtnA.pressedFor(2000))
+  {
+    value += 10;
+  }
+  else if (M5.BtnA.pressedFor(500))
+  {
+    value += 5;
   }
 
-  if (mfrc522->uid.size > 0)
+  if (old != value)
   {
-    for (byte i = 0; i < mfrc522->uid.size; i++)
-    {
-      rfid_read += String(mfrc522->uid.uidByte[i], HEX);
-    }
+    old = value;
+
+    goPlus.Servo_write_angle(SERVO_NUM0_PW, value);
   }
 
-  Serial.println(rfid_read);
-
-  return rfid_read;
+  delay(1000);
 }
-
-// void loop()
-// {
-//   goPlus.Servo_write_angle(SERVO_NUM0_PW, 180);
-//   // goPlus.Servo_write_angle(SERVO_NUM1_PW, 180);
-//   // goPlus.Servo_write_angle(SERVO_NUM2_PW, 180);
-//   // goPlus.Servo_write_angle(SERVO_NUM3_PW, 180);
-//   Serial.println("Servo 180");
-//   delay(1000);
-//   goPlus.Servo_write_angle(SERVO_NUM0_PW, 0);
-//   // goPlus.Servo_write_angle(SERVO_NUM1_PW, 0);
-//   // goPlus.Servo_write_angle(SERVO_NUM2_PW, 0);
-//   // goPlus.Servo_write_angle(SERVO_NUM3_PW, 0);
-//   Serial.println("Servo 0");
-//   delay(1000);
-// }
+*/
