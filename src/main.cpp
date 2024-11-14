@@ -6,7 +6,7 @@
 #include <GoPlus2.h>
 #include <MODULE_GRBL13.2.h>
 #include <WiFi.h>
-#include <DolibarrClient.h>
+#include <Dolibarr.h>
 #include <ArduinoJson.h>
 
 // MFRC522 mfrc522(40); // Instance de la classe MFRC522
@@ -25,7 +25,7 @@ void setup()
 {
   M5.begin();
 
-  // Wire.begin(21, 22);
+  Wire.begin(21, 22);
   // stepper_motor_driver.Init(&Wire);
   // stepper_motor_driver.setMode("absolute");
 
@@ -41,7 +41,6 @@ void setup()
 
   Dolibarr dolibarr("http://86.202.221.234:8088");
   String resp = dolibarr.connect("admin", "admin");
-
   String doc = dolibarr.getProductWarehouse("1");
 
   Serial.println("Warehouse : " + doc);

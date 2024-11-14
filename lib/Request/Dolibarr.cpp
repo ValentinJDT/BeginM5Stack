@@ -1,7 +1,6 @@
-#include <DolibarrClient.h>
+#include <Dolibarr.h>
 #include <HTTPClient.cpp>
 #include <ArduinoJson.h>
-
 
 Dolibarr::Dolibarr(String host)
 {
@@ -34,7 +33,10 @@ JsonDocument Dolibarr::getProduct(String id)
 String Dolibarr::getProductWarehouse(String id)
 {
     String response = this->client.sendAuth(RequestClient::GET, this->token, "/api/index.php/products/" + id, "");
-    JsonDocument doc;
-    deserializeJson(doc, response);
-    return doc["fk_default_warehouse"];
+    JsonDocument docProduct;
+    deserializeJson(docProduct, response);
+
+    String response = this->client.sendAuth(RequestClient::GET, this->token, "/api/index.php/products/" + id, "");
+
+    return docProduct["fk_default_warehouse"];
 }
