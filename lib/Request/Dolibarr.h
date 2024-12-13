@@ -14,4 +14,6 @@ class Dolibarr {
         JsonDocument getProduct(String id);
 
         String getProductWarehouse(String id);
+
+        String addProductToWarehouse(String id, String warehouse, int quantity = 1);
 };

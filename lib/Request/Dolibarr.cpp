@@ -35,8 +35,12 @@ String Dolibarr::getProductWarehouse(String id)
     String response = this->client.sendAuth(RequestClient::GET, this->token, "/api/index.php/products/" + id, "");
     JsonDocument docProduct;
     deserializeJson(docProduct, response);
-
-    String response = this->client.sendAuth(RequestClient::GET, this->token, "/api/index.php/products/" + id, "");
-
     return docProduct["fk_default_warehouse"];
+}
+
+String Dolibarr::addProductToWarehouse(String id, String warehouse, int quantity)
+{
+    String data = "product_id=" + id + "&warehouse_id=" + warehouse + "&qty=" + quantity;
+    String response = this->client.sendAuth(RequestClient::GET, this->token, "/api/index.php/stockmovements", "");
+    return response;
 }
